@@ -1,0 +1,52 @@
+1. YouTube Feed by Video ID
+Use this shortcode to display videos from the feeds using their IDs:
+
+[youtube_feed id="YOUR_FEED_ID"]
+
+2. Group Channel ID Feed
+Use this shortcode to display videos from the channels grouped by their IDs:
+
+[youtube_group_feed group_id="YOUR_GROUP_ID"]
+[youtube_group_feed group_id="1" title="News" rows="2" columns="3"]
+
+
+3.Archive
+Use this shortcode to display the archived videos:
+
+[yt_archive]
+
+4. Playlist
+Use this shortcode to display a playlist:
+
+[yt_playlist playlist_id="YOUR_PLAYLIST_ID"]
+
+Example Usage:
+To display a specific YouTube feed:
+[youtube_feed id="123"]
+
+To display a group of videos by group ID:
+[yt_group_feed group_id="456"]
+
+To display the archive of videos:
+[yt_archive]
+
+To display a YouTube playlist:
+[yt_playlist playlist_id="PLw-VjHDlEOgsB7hFksA3M8zOx8GVBd-fF"]
+
+Integration:
+Make sure you replace YOUR_FEED_ID, YOUR_GROUP_ID, and YOUR_PLAYLIST_ID with the actual IDs you are using.
+
+
+### Integrate into `main.php`
+1. Add the shortcodes above to your `main.php` file after the existing code.
+2. Ensure the rest of your code (including the closing tags) is intact.
+
+### Using the Shortcodes
+Use the shortcodes as follows in your WordPress posts or pages:
+- **YouTube Feed by Video ID**: `[yt_feed id="YOUR_FEED_ID"]`
+- **Group Channel ID Feed**: `[yt_group_feed group_id="YOUR_GROUP_ID"]`
+- **Archive**: `[yt_archive]`
+- **Playlist**: `[yt_playlist playlist_id="YOUR_PLAYLIST_ID"]`
+
+This setup should ensure your plugin is functional and easily manageable. If you need further help or adjustments, feel free to ask! 🚀📺
+

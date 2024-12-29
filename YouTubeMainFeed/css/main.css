@@ -1,0 +1,89 @@
+/* Admin Panel Table Styling */
+.youtube-admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.youtube-admin-table th, 
+.youtube-admin-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.youtube-admin-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.youtube-admin-table input[type="text"],
+.youtube-admin-table textarea {
+    width: 95%;
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.youtube-admin-table .button {
+    padding: 8px 12px;
+    background-color: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.youtube-admin-table .button:hover {
+    background-color: #005b8c;
+}
+
+/* Form Styling */
+.youtube-admin-form {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+
+.youtube-admin-form h2 {
+    margin-bottom: 15px;
+}
+
+.youtube-admin-form label {
+    font-weight: bold;
+}
+
+.youtube-admin-form input, 
+.youtube-admin-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Buttons */
+.youtube-admin-form button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.youtube-admin-form button:hover {
+    background-color: #218838;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .youtube-admin-table input[type="text"],
+    .youtube-admin-table textarea {
+        width: 100%;
+    }
+}

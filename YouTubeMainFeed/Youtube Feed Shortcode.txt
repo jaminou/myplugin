@@ -1,0 +1,212 @@
+1:Youtube feed shortcode 
+
+function yt_feed_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'id' => '',
+    ), $atts, 'yt_feed');
+
+    $query = new WP_Query(array(
+        'post_type' => 'yt_feed',
+        'p' => $atts['id'],
+    ));
+
+    ob_start();
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $videos = get_post_meta(get_the_ID(), 'yt_videos', true);
+            if (!empty($videos)) {
+                echo '<div class="youtube-feed">';
+                foreach ($videos as $video_id) {
+                    echo '<div class="youtube-video">';
+                    echo '<iframe src="https://www.youtube.com/embed/' . esc_attr($video_id) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                    echo '</div>';
+                }
+                echo '</div>';
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_feed', 'yt_feed_shortcode');
+
+2: Group Channel ID Feed Shortcode
+function yt_group_feed_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'group_id' => '',
+    ), $atts, 'yt_group_feed');
+
+    global $wpdb;
+    $channel_ids = $wpdb->get_col($wpdb->prepare("SELECT channel_id FROM {$wpdb->prefix}youtube_channels WHERE group_id = %d", $atts['group_id']));
+
+    ob_start();
+
+    if (!empty($channel_ids)) {
+        echo '<div class="youtube-feed">';
+        foreach ($channel_ids as $channel_id) {
+            echo '<div class="youtube-video">';
+            echo '<iframe src="https://www.youtube.com/embed?listType=user_uploads&list=' . esc_attr($channel_id) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_group_feed', 'yt_group_feed_shortcode');
+
+3: Archive Shortcode 
+function yt_archive_shortcode($atts) {
+    global $wpdb;
+    $archive_videos = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}youtube_archive");
+
+    ob_start();
+
+    if (!empty($archive_videos)) {
+        echo '<div class="youtube-archive">';
+        foreach ($archive_videos as $video) {
+            echo '<div class="youtube-video">';
+            echo '<a href="https://www.youtube.com/watch?v=' . esc_attr($video->video_id) . '" target="_blank">';
+            echo esc_html($video->title);
+            echo '</a> - ' . esc_html($video->channel_name) . ' - ' . esc_html($video->date_added);
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_archive', 'yt_archive_shortcode');
+
+4: Playlist shortcode
+function yt_playlist_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'playlist_id' => '',
+    ), $atts, 'yt_playlist');
+
+    ob_start();
+
+    if (!empty($atts['playlist_id'])) {
+        echo '<div class="youtube-playlist">';
+        echo '<iframe src="https://www.youtube.com/embed/playlist?list=' . esc_attr($atts['playlist_id']) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+        echo '</div>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_playlist, 'yt_playlist_shortcode');
+
+//othecode below...
+?>
+
+====================================================================================
+
+<?php
+// Other code above...
+
+// YouTube Feed Shortcode by Video ID
+function yt_feed_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'id' => '',
+    ), $atts, 'yt_feed');
+
+    $query = new WP_Query(array(
+        'post_type' => 'yt_feed',
+        'p' => $atts['id'],
+    ));
+
+    ob_start();
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $videos = get_post_meta(get_the_ID(), 'yt_videos', true);
+            if (!empty($videos)) {
+                echo '<div class="youtube-feed">';
+                foreach ($videos as $video_id) {
+                    echo '<div class="youtube-video">';
+                    echo '<iframe src="https://www.youtube.com/embed/' . esc_attr($video_id) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                    echo '</div>';
+                }
+                echo '</div>';
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_feed', 'yt_feed_shortcode');
+
+// Group Channel ID Feed Shortcode
+function yt_group_feed_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'group_id' => '',
+    ), $atts, 'yt_group_feed');
+
+    global $wpdb;
+    $channel_ids = $wpdb->get_col($wpdb->prepare("SELECT channel_id FROM {$wpdb->prefix}youtube_channels WHERE group_id = %d", $atts['group_id']));
+
+    ob_start();
+
+    if (!empty($channel_ids)) {
+        echo '<div class="youtube-feed">';
+        foreach ($channel_ids as $channel_id) {
+            echo '<div class="youtube-video">';
+            echo '<iframe src="https://www.youtube.com/embed?listType=user_uploads&list=' . esc_attr($channel_id) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_group_feed', 'yt_group_feed_shortcode');
+
+// Archive Shortcode
+function yt_archive_shortcode($atts) {
+    global $wpdb;
+    $archive_videos = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}youtube_archive");
+
+    ob_start();
+
+    if (!empty($archive_videos)) {
+        echo '<div class="youtube-archive">';
+        foreach ($archive_videos as $video) {
+            echo '<div class="youtube-video">';
+            echo '<a href="https://www.youtube.com/watch?v=' . esc_attr($video->video_id) . '" target="_blank">';
+            echo esc_html($video->title);
+            echo '</a> - ' . esc_html($video->channel_name) . ' - ' . esc_html($video->date_added);
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_archive', 'yt_archive_shortcode');
+
+// Playlist Shortcode
+function yt_playlist_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'playlist_id' => '',
+    ), $atts, 'yt_playlist');
+
+    ob_start();
+
+    if (!empty($atts['playlist_id'])) {
+        echo '<div class="youtube-playlist">';
+        echo '<iframe src="https://www.youtube.com/embed/playlist?list=' . esc_attr($atts['playlist_id']) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+        echo '</div>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('yt_playlist', 'yt_playlist_shortcode');
+
+// Other code below...
+?>
+
