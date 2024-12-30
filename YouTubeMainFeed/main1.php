@@ -773,7 +773,6 @@ function extract_video_id($link) {
 // Shortcodes
 /* //disable Fetching */
 // Ensure fetch function exactly tracing correct beyond everything:
-<?php
 function fetch_latest_video($channel_id) {
     global $wpdb;
 
