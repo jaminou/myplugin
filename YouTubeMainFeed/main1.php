@@ -784,7 +784,7 @@ function fetch_latest_video($channel_id) {
         error_log("An error occurred retrieving video info for channel: $channel_id");
         return '';
     } 
-    
+
     $body = wp_remote_retrieve_body($response);
     $data = json_decode($body, true);
 
@@ -797,7 +797,6 @@ function fetch_latest_video($channel_id) {
     return $latest_video;
 }
 
-// Shortcode Execution with Updated API key usage
 function youtube_feed_shortcode($atts) {
     $atts = shortcode_atts([
         'id' => '', 
@@ -828,7 +827,7 @@ function youtube_feed_shortcode($atts) {
     ob_start();
     if (!empty($videos)) {
         echo '<div class="youtube-feed-grid" style="display: grid; grid-template-columns: repeat(' . intval($atts['columns']) . ', 1fr); gap: 1rem;">';
-        for ($i = 0; i < min($atts['rows'] * $atts['columns'], count($videos)); $i++) {
+        for ($i = 0; $i < min($atts['rows'] * $atts['columns'], count($videos)); $i++) {
             $video = $videos[$i];
             echo '<div class="youtube-video" style="box-shadow: 10px 30px 30px rgba(0, 0, 0, 0.1);">';
             echo '<iframe width="' . esc_attr($atts['width']) . '" height="' . esc_attr($atts['height']) . '" src="https://www.youtube.com/embed/' . esc_attr($video) . '?autoplay=' . esc_attr($atts['autoplay']) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
