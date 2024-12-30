@@ -776,29 +776,112 @@ function extract_video_id($link) {
 function fetch_latest_video($channel_id) {
     global $wpdb;
 
-    // Implement caching minimizing quota hit
-    $cache_key = 'latest_video_' . $channel_id;
-    $cached_video = get_transient($cache_key);
+    // Use the provided API key
+    $api_key = 'AIzaSyArYuApJCHoB5mhhred1SFEWWvafTMQyJo'; 
 
-    if ($cached_video) {
-        return $cached_video;
-    }
-
-    $latest_video = $wpdb->get_var($wpdb->prepare(
-        "SELECT video_id FROM {$wpdb->prefix}youtube_videos WHERE channel_id = %s ORDER BY published_date DESC LIMIT 1",
-        $channel_id
-    ));
+    $response = wp_remote_get("https://www.googleapis.com/youtube/v3/search?key=$api_key&channelId=$channel_id&order=date&part=snippet&type=video&maxResults=1");
+    if (is_wp_error($response)) {
+        error_log("An error occurred retrieving video info for channel: $channel_id");
+        return '';
+    } 
     
-    if (!$latest_video) {
-        error_log("Unable fetch latest video from channel: $channel_id");
-    } else {
-        set_transient($cache_key, $latest_video, HOUR_IN_SECONDS);
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    if (empty($data['items'])) {
+        error_log("No video found for channel: $channel_id");
+        return '';
     }
 
-    return $latest_video 
-            ? $latest_video 
-            : 'fallback_video_id'; // use fallback_vid ensuring functionalities practical display smooth exact 
+    $latest_video = $data['items'][0]['id']['videoId'];
+    return $latest_video;
 }
+
+// Shortcode Execution with Updated API key usage
+function youtube_feed_shortcode($atts) {
+    $atts = shortcode_atts([
+        'id' => '', 
+        'rows' => 2, 
+        'columns' => 3, 
+        'width' => '100%', 
+        'height' => 'auto', 
+        'autoplay' => '0'
+    ], $atts, 'youtube_feed');
+    
+    global $wpdb;
+
+    $feed_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}youtube_feeds WHERE id = %d", $atts['id']), ARRAY_A);
+    if (!empty($feed_data) && isset($feed_data['channel_ids'])) {
+        $channel_ids = explode(',', $feed_data['channel_ids']);
+    } else {
+        $channel_ids = [];
+    }
+
+    $videos = [];
+    foreach ($channel_ids as $channel_id) {
+        $latest_video = fetch_latest_video($channel_id);
+        if ($latest_video) {
+            $videos[] = $latest_video;
+        }
+    }
+
+    ob_start();
+    if (!empty($videos)) {
+        echo '<div class="youtube-feed-grid" style="display: grid; grid-template-columns: repeat(' . intval($atts['columns']) . ', 1fr); gap: 1rem;">';
+        for ($i = 0; i < min($atts['rows'] * $atts['columns'], count($videos)); $i++) {
+            $video = $videos[$i];
+            echo '<div class="youtube-video" style="box-shadow: 10px 30px 30px rgba(0, 0, 0, 0.1);">';
+            echo '<iframe width="' . esc_attr($atts['width']) . '" height="' . esc_attr($atts['height']) . '" src="https://www.youtube.com/embed/' . esc_attr($video) . '?autoplay=' . esc_attr($atts['autoplay']) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            echo '</div>';
+        }
+        echo '</div>';
+    } else {
+        echo 'No videos available';
+    }
+    return ob_get_clean();
+}
+add_shortcode('youtube_feed', 'youtube_feed_shortcode');
+
+function youtube_group_feed_shortcode($atts) {
+    $atts = shortcode_atts([
+        'group_id' => '', 
+        'rows' => 2, 
+        'columns' => 3, 
+        'title' => 'Group', 
+        'width' => '560', 
+        'height' => '315', 
+        'autoplay' => '0'
+    ], $atts, 'youtube_group_feed');
+    
+    global $wpdb;
+
+    $channel_data = $wpdb->get_results($wpdb->prepare("SELECT channel_id, channel_name FROM {$wpdb->prefix}youtube_channels WHERE group_id = %d", $atts['group_id']));
+
+    ob_start();
+    if ($atts['title']) {
+        echo '<h2>' . esc_html($atts['title']) . '</h2>';
+    }
+    if (!empty($channel_data)) {
+        echo '<div class="youtube-feed-grid" style="display: grid; grid-template-columns: repeat(' . intval($atts['columns']) . ', 1fr); gap: 1rem;">';
+        foreach ($channel_data as $channel) {
+            $video_id = fetch_latest_video($channel->channel_id);
+            
+            if ($video_id) {
+                echo '<div class="youtube-video" style="box-shadow: 10px 30px 30px rgba(0, 0, 0, 0.1);">';
+                echo '<iframe width="' . esc_attr($atts['width']) . '" height="' . esc_attr($atts['height']) . '" src="https://www.youtube.com/embed/' . esc_attr($video_id) . '?autoplay=' . esc_attr($atts['autoplay']) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                echo '<p style="text-align: center;">' . esc_html($channel->channel_name) . '</p>';
+                echo '</div>';
+            } else {
+                echo '<p>Unable to fetch latest video for channel: ' . esc_html($channel->channel_name) . '</p>';
+            }
+        }
+        echo '</div>';
+    } else {
+        echo '';
+    }
+    return ob_get_clean();
+}
+add_shortcode('youtube_group_feed', 'youtube_group_feed_shortcode');
 
 // YT FEED Shortcodes
 function youtube_feed_shortcode($atts) {
